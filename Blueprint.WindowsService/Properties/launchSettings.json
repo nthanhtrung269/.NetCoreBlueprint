@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Blueprint.WindowsService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
