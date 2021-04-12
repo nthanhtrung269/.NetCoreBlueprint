@@ -66,7 +66,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
 
             // Start re-generating resized images data
             var connection = _sqlConnectionFactory.GetNewConnection();
-            const string query = @"SELECT * FROM BlueprintFiles f WHERE f.OriginalId IS NULL
+            const string query = @"SELECT * FROM BlueprintFile f WHERE f.OriginalId IS NULL
                                     AND f.Width IS NOT NULL
                                     AND f.Height IS NOT NULL
                                     AND (f.Width >= @MinWidth
@@ -74,7 +74,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
                                     AND (f.Extension in (SELECT * FROM STRING_SPLIT(@SupportFiles, ',')))
                                     AND (f.FileType in (SELECT * FROM STRING_SPLIT(@SupportFileTypes, ',')))";
 
-            var rsFiles = (await connection.QueryAsync<BlueprintFile>(query, new
+            var blueprintFiles = (await connection.QueryAsync<BlueprintFile>(query, new
             {
                 MinWidth = minWidth,
                 MinHeight = minHeight,
@@ -84,14 +84,14 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
 
             connection.Dispose();
 
-            if (rsFiles != null)
+            if (blueprintFiles != null)
             {
-                _logger.LogInformation($"Total items for re-generating: {rsFiles.Count}");
+                _logger.LogInformation($"Total items for re-generating: {blueprintFiles.Count}");
 
-                for (int i = 0; i * PageSize <= rsFiles.Count; i++)
+                for (int i = 0; i * PageSize <= blueprintFiles.Count; i++)
                 {
                     _logger.LogInformation($"Start ProcessWithPageSize with PageIndex: {i}, PageSize: {PageSize}");
-                    await ProcessWithPageSize(rsFiles.Skip(i * PageSize).Take(PageSize).ToList());
+                    await ProcessWithPageSize(blueprintFiles.Skip(i * PageSize).Take(PageSize).ToList());
                 }
             }
 
@@ -101,21 +101,21 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <summary>
         /// Pregenerates resized images.
         /// </summary>
-        /// <param name="rsFile">The rsFile.</param>
+        /// <param name="blueprintFile">The blueprintFile.</param>
         /// <returns>Task.</returns>
-        public async Task PreGenerateResizedImages(BlueprintFile rsFile)
+        public async Task PreGenerateResizedImages(BlueprintFile blueprintFile)
         {
-            await PreGenerateForOriginalFile(rsFile);
+            await PreGenerateForOriginalFile(blueprintFile);
         }
 
-        private async Task ProcessCleanUpDataWithPageSize(List<BlueprintFile> rsFiles)
+        private async Task ProcessCleanUpDataWithPageSize(List<BlueprintFile> blueprintFiles)
         {
             _logger.LogInformation($"Call to {nameof(ProcessCleanUpDataWithPageSize)}");
             var tasks = new List<Task>();
 
-            foreach (BlueprintFile rsFile in rsFiles)
+            foreach (BlueprintFile blueprintFile in blueprintFiles)
             {
-                tasks.Add(CleanUpDataForOriginalFile(rsFile));
+                tasks.Add(CleanUpDataForOriginalFile(blueprintFile));
             }
 
             var completionTask = Task.WhenAll(tasks);
@@ -130,19 +130,19 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
             }
 
             var connection = _sqlConnectionFactory.GetNewConnection();
-            const string removeQuery = @"DELETE BlueprintFiles WHERE OriginalId is not null";
+            const string removeQuery = @"DELETE BlueprintFile WHERE OriginalId is not null";
             await connection.ExecuteAsync(removeQuery);
             connection.Dispose();
         }
 
-        private async Task ProcessWithPageSize(List<BlueprintFile> rsFiles)
+        private async Task ProcessWithPageSize(List<BlueprintFile> blueprintFiles)
         {
             _logger.LogInformation($"Call to {nameof(ProcessWithPageSize)}");
             var tasks = new List<Task>();
 
-            foreach (BlueprintFile rsFile in rsFiles)
+            foreach (BlueprintFile blueprintFile in blueprintFiles)
             {
-                tasks.Add(PreGenerateForOriginalFile(rsFile));
+                tasks.Add(PreGenerateForOriginalFile(blueprintFile));
             }
 
             var completionTask = Task.WhenAll(tasks);
@@ -157,24 +157,24 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
             }
         }
 
-        private Task CleanUpDataForOriginalFile(BlueprintFile rsFile)
+        private Task CleanUpDataForOriginalFile(BlueprintFile blueprintFile)
         {
-            _logger.LogInformation($"Start {nameof(CleanUpDataForOriginalFile)} with Id: {rsFile.Id}");
+            _logger.LogInformation($"Start {nameof(CleanUpDataForOriginalFile)} with Id: {blueprintFile.Id}");
 
-            if (File.Exists(rsFile.FilePath))
+            if (File.Exists(blueprintFile.FilePath))
             {
-                File.Delete(rsFile.FilePath);
+                File.Delete(blueprintFile.FilePath);
             }
 
             return Task.CompletedTask;
         }
 
-        private async Task PreGenerateForOriginalFile(BlueprintFile rsFile)
+        private async Task PreGenerateForOriginalFile(BlueprintFile blueprintFile)
         {
-            _logger.LogInformation($"Start {nameof(PreGenerateForOriginalFile)} with Id: {rsFile.Id}");
+            _logger.LogInformation($"Start {nameof(PreGenerateForOriginalFile)} with Id: {blueprintFile.Id}");
 
-            await DeleteResizedFilesAsync(rsFile);
-            FileStream fileStream = _imageService.ReadImage(rsFile.FilePath);
+            await DeleteResizedFilesAsync(blueprintFile);
+            FileStream fileStream = _imageService.ReadImage(blueprintFile.FilePath);
 
             if (fileStream != null)
             {
@@ -182,29 +182,29 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
                 {
                     foreach (int newWidth in _configuration.PreGeneratedWidthRange)
                     {
-                        if (newWidth >= rsFile.Width)
+                        if (newWidth >= blueprintFile.Width)
                         {
                             continue;
                         }
 
-                        await ResizeImageAsync(rsFile, fileStream, newWidth, 0);
+                        await ResizeImageAsync(blueprintFile, fileStream, newWidth, 0);
                         fileStream.Position = 0;
                     }
 
                     foreach (int newHeight in _configuration.PreGeneratedHeightRange)
                     {
-                        if (newHeight >= rsFile.Height)
+                        if (newHeight >= blueprintFile.Height)
                         {
                             continue;
                         }
 
-                        await ResizeImageAsync(rsFile, fileStream, 0, newHeight);
+                        await ResizeImageAsync(blueprintFile, fileStream, 0, newHeight);
                         fileStream.Position = 0;
                     }
                 }
             }
 
-            await UpdateFileAsync(rsFile);
+            await UpdateFileAsync(blueprintFile);
         }
 
         private int GetMinWidth()
@@ -219,47 +219,47 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
             return minValue ?? 0;
         }
 
-        private async Task DeleteResizedFilesAsync(BlueprintFile rsFile)
+        private async Task DeleteResizedFilesAsync(BlueprintFile blueprintFile)
         {
             _logger.LogInformation($"Start DeleteResizedFilesAsync");
 
             var connection = _sqlConnectionFactory.GetNewConnection();
             const string getQuery = @"SELECT Id, FilePath
-                               FROM BlueprintFiles
+                               FROM BlueprintFile
                                WHERE OriginalId = @Id";
-            const string removeQuery = @"DELETE BlueprintFiles WHERE OriginalId = @Id";
+            const string removeQuery = @"DELETE BlueprintFile WHERE OriginalId = @Id";
 
-            var query = await connection.QueryAsync<DeletedRsFile>(getQuery, new { rsFile.Id });
-            var rsFiles = query.ToList();
-            rsFiles.ForEach(f =>
+            var query = await connection.QueryAsync<DeletedBlueprintFile>(getQuery, new { blueprintFile.Id });
+            var blueprintFiles = query.ToList();
+            blueprintFiles.ForEach(f =>
             {
                 if (File.Exists(f.FilePath))
                 {
                     File.Delete(f.FilePath);
                 }
             });
-            await connection.ExecuteAsync(removeQuery, new { rsFile.Id });
+            await connection.ExecuteAsync(removeQuery, new { blueprintFile.Id });
 
             connection.Dispose();
         }
 
-        private async Task UpdateFileAsync(BlueprintFile rsFile)
+        private async Task UpdateFileAsync(BlueprintFile blueprintFile)
         {
             _logger.LogInformation($"Start UpdateFileAsync");
 
             var connection = _sqlConnectionFactory.GetNewConnection();
-            const string updateQuery = @"UPDATE [dbo].[BlueprintFiles] SET BackgroudProcessingStatus = @BackgroudProcessingStatus, ModifiedBy=@ModifiedBy, ModifiedDate=@ModifiedDate WHERE Id = @Id";
-            await connection.ExecuteAsync(updateQuery, new { BackgroudProcessingStatus = BackgroudProcessingStatus.Processed, ModifiedBy = nameof(System), ModifiedDate = DateTime.UtcNow, rsFile.Id });
+            const string updateQuery = @"UPDATE [dbo].[BlueprintFile] SET BackgroudProcessingStatus = @BackgroudProcessingStatus, ModifiedBy=@ModifiedBy, ModifiedDate=@ModifiedDate WHERE Id = @Id";
+            await connection.ExecuteAsync(updateQuery, new { BackgroudProcessingStatus = BackgroudProcessingStatus.Processed, ModifiedBy = nameof(System), ModifiedDate = DateTime.UtcNow, blueprintFile.Id });
             connection.Dispose();
         }
 
-        private async Task ResizeImageAsync(BlueprintFile rsFile, FileStream fileStream, int newWidth, int newHeight)
+        private async Task ResizeImageAsync(BlueprintFile blueprintFile, FileStream fileStream, int newWidth, int newHeight)
         {
-            _logger.LogInformation($"Start ResizeImageAsync: {rsFile.Id} - {rsFile.OriginalFileName} with width/height: {rsFile.Width}/{rsFile.Height} and newWidth/newHeight: {newWidth}/{newHeight}");
+            _logger.LogInformation($"Start ResizeImageAsync: {blueprintFile.Id} - {blueprintFile.OriginalFileName} with width/height: {blueprintFile.Width}/{blueprintFile.Height} and newWidth/newHeight: {newWidth}/{newHeight}");
 
-            var oldFileName = Path.GetFileName(rsFile.FilePath);
-            string fileExtension = Path.GetExtension(rsFile.FilePath);
-            var imagePath = Path.GetDirectoryName(rsFile.FilePath);
+            var oldFileName = Path.GetFileName(blueprintFile.FilePath);
+            string fileExtension = Path.GetExtension(blueprintFile.FilePath);
+            var imagePath = Path.GetDirectoryName(blueprintFile.FilePath);
 
             var newFileName = string.Concat(Path.GetFileNameWithoutExtension(oldFileName),
                     newWidth == 0 ? "" : $"_w{newWidth}",
@@ -284,30 +284,30 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
                     {
                         CreatedDate = DateTime.UtcNow,
                         CreatedBy = nameof(System),
-                        FileType = rsFile.FileType,
+                        FileType = blueprintFile.FileType,
                         Height = dimentions.height,
                         Width = dimentions.width,
                         OriginalFileName = newFileName,
-                        Source = rsFile.Source,
-                        OriginalId = rsFile.Id,
-                        Extension = rsFile.Extension,
-                        CompanyId = rsFile.CompanyId,
+                        Source = blueprintFile.Source,
+                        OriginalId = blueprintFile.Id,
+                        Extension = blueprintFile.Extension,
+                        CompanyId = blueprintFile.CompanyId,
                         FileName = null
                     })
                     .Build();
 
-                await InsertRsFile(newFile);
+                await InsertFile(newFile);
             }
         }
 
-        private async Task InsertRsFile(BlueprintFile rsFile)
+        private async Task InsertFile(BlueprintFile blueprintFile)
         {
-            _logger.LogInformation($"Saving rsFile to DB for Img: {rsFile.FilePath}");
+            _logger.LogInformation($"Saving blueprintFile to DB for Img: {blueprintFile.FilePath}");
             var connection = _sqlConnectionFactory.GetNewConnection();
-            const string insertQuery = @"INSERT INTO [dbo].[BlueprintFiles]
+            const string insertQuery = @"INSERT INTO [dbo].[BlueprintFile]
                         ([OriginalId], [OriginalFileName], [Width], [Height], [CompanyId], [FilePath], [ThumbnailPath], [Extension], [FileType], [Source], [CloudUrl], [FileData], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate]) 
                         VALUES (@OriginalId, @OriginalFileName, @Width, @Height, @CompanyId, @FilePath, @ThumbnailPath, @Extension, @FileType, @Source, @CloudUrl, @FileData, @CreatedBy, @CreatedDate, @ModifiedBy, @ModifiedDate)";
-            await connection.ExecuteAsync(insertQuery, rsFile);
+            await connection.ExecuteAsync(insertQuery, blueprintFile);
             connection.Dispose();
         }
     }

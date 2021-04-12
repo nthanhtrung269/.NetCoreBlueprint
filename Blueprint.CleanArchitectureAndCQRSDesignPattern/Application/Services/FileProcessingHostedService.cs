@@ -84,21 +84,21 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
                     IFileRepository fileRepository = scope.ServiceProvider.GetService<IFileRepository>();
                     List<string> supportFiles = _configuration.FileTypes;
                     List<string> supportedCategoryTypes = _configuration.SupportedCategoryTypes;
-                    List<BlueprintFile> rsFiles = fileRepository.GetFilesForBackgroudProcessing(supportFiles, supportedCategoryTypes, _configuration.FileProcessingHostedServiceTotalFilesProcessedPerTimes).ToList();
+                    List<BlueprintFile> blueprintFiles = fileRepository.GetFilesForBackgroudProcessing(supportFiles, supportedCategoryTypes, _configuration.FileProcessingHostedServiceTotalFilesProcessedPerTimes).ToList();
 
                     try
                     {
-                        foreach (var rsFile in rsFiles)
+                        foreach (var blueprintFile in blueprintFiles)
                         {
-                            await _domainEventService.Publish(new PreGenerateResizedImagesEvent(rsFile.Id));
+                            await _domainEventService.Publish(new PreGenerateResizedImagesEvent(blueprintFile.Id));
                         }
 
-                        fileRepository.UpdateRangeForBackgroudProcessing(rsFiles, (int)BackgroudProcessingStatus.Processed);
+                        fileRepository.UpdateRangeForBackgroudProcessing(blueprintFiles, (int)BackgroudProcessingStatus.Processed);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, $"Call to {nameof(PreGenerateResizedImagesEvent)} failed.");
-                        fileRepository.UpdateRangeForBackgroudProcessing(rsFiles, (int)BackgroudProcessingStatus.Failed);
+                        fileRepository.UpdateRangeForBackgroudProcessing(blueprintFiles, (int)BackgroudProcessingStatus.Failed);
                     }
                 }
             }

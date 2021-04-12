@@ -1,6 +1,6 @@
 ﻿namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
 {
-    public class DeletedRsFile
+    public class DeletedBlueprintFile
     {
         public long Id { get; set; }
 

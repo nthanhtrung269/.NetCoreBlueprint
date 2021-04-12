@@ -14,7 +14,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
         public Task<BlueprintSetting> GetByName(string settingName)
         {
             settingName = settingName.Trim().ToLower();
-            return _dbContext.RsSetting.FirstOrDefaultAsync(e => e.SettingName.ToLower() == settingName);
+            return _dbContext.BlueprintSetting.FirstOrDefaultAsync(e => e.SettingName.ToLower() == settingName);
         }
     }
 }

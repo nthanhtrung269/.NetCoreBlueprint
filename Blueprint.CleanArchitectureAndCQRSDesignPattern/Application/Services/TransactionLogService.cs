@@ -30,7 +30,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <param name="transactionLogStatus">The transactionLogStatus.</param>
         /// <param name="requestData">The requestData.</param>
         /// <param name="userId">The userId.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(TransactionLogStep transactionLogStep,
             TransactionLogStatus transactionLogStatus,
             string requestData,
@@ -57,7 +57,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <param name="requestData">The requestData.</param>
         /// <param name="userId">The userId.</param>
         /// <param name="correlationId">The correlationId.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(TransactionLogStep transactionLogStep,
             TransactionLogStatus transactionLogStatus,
             string requestData,
@@ -88,7 +88,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <param name="orderId">The orderId.</param>
         /// <param name="transactionId">The transactionId.</param>
         /// <param name="correlationId">The correlationId.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(TransactionLogStep transactionLogStep,
             TransactionLogStatus transactionLogStatus,
             string requestData,
@@ -123,7 +123,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <param name="userId">The userId.</param>
         /// <param name="orderId">The orderId.</param>
         /// <param name="transactionId">The transactionId.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(TransactionLogStep transactionLogStep,
             TransactionLogStatus transactionLogStatus,
             string requestData,
@@ -159,7 +159,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <param name="orderId">The orderId.</param>
         /// <param name="transactionId">The transactionId.</param>
         /// <param name="correlationId">The correlationId.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(TransactionLogStep transactionLogStep,
             TransactionLogStatus transactionLogStatus,
             string requestData,
@@ -195,7 +195,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <param name="userId">The userId.</param>
         /// <param name="exceptionMessage">The exceptionMessage.</param>
         /// <param name="exception">The exception.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(TransactionLogStep transactionLogStep,
             TransactionLogStatus transactionLogStatus,
             string requestData,
@@ -228,7 +228,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// <param name="exceptionMessage">The exceptionMessage.</param>
         /// <param name="exception">The exception.</param>
         /// <param name="correlationId">The correlationId.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(TransactionLogStep transactionLogStep,
             TransactionLogStatus transactionLogStatus,
             string requestData,
@@ -257,7 +257,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
         /// Adds transaction log.
         /// </summary>
         /// <param name="transactionLog">The transactionLog.</param>
-        /// <returns>RsTransactionLog.</returns>
+        /// <returns>BlueprintTransactionLog.</returns>
         public async Task<BlueprintTransactionLog> AddTransactionLogAsync(BlueprintTransactionLog transactionLog)
         {
             try

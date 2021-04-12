@@ -38,26 +38,26 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
             var timer = Stopwatch.StartNew();
 
             List<string> supportFiles = new List<string>() { "jpg", "jpeg", "tif", "gif", "jfif", "webp", "png" };
-            List<BlueprintFile> rsFiles = await _fileRepository.FindByAsync(f => supportFiles.Contains(f.Extension) && (f.Width == null || f.Height == null));
+            List<BlueprintFile> blueprintFiles = await _fileRepository.FindByAsync(f => supportFiles.Contains(f.Extension) && (f.Width == null || f.Height == null));
 
-            for (int i = 0; i * PageSize <= rsFiles.Count; i++)
+            for (int i = 0; i * PageSize <= blueprintFiles.Count; i++)
             {
                 _logger.LogInformation($"Start ProcessWithPageSize with PageIndex: {i}, PageSize: {PageSize}");
-                await ProcessWithPageSize(rsFiles.Skip(i * PageSize).Take(PageSize).ToList());
+                await ProcessWithPageSize(blueprintFiles.Skip(i * PageSize).Take(PageSize).ToList());
             }
 
             timer.Stop();
             _logger.LogInformation($"End the call {nameof(Process)} after {timer.ElapsedMilliseconds}ms");
         }
 
-        private async Task ProcessWithPageSize(List<BlueprintFile> rsFiles)
+        private async Task ProcessWithPageSize(List<BlueprintFile> blueprintFiles)
         {
             _logger.LogInformation($"Call to {nameof(ProcessWithPageSize)}");
             var tasks = new List<Task>();
 
-            foreach (BlueprintFile rsFile in rsFiles)
+            foreach (BlueprintFile blueprintFile in blueprintFiles)
             {
-                tasks.Add(ProcessRsFile(rsFile));
+                tasks.Add(ProcessFile(blueprintFile));
             }
 
             var completionTask = Task.WhenAll(tasks);
@@ -72,36 +72,36 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Services
             }
         }
 
-        private async Task ProcessRsFile(BlueprintFile rsFile)
+        private async Task ProcessFile(BlueprintFile blueprintFile)
         {
-            _logger.LogInformation($"Call to {nameof(ProcessRsFile)} with Id: {rsFile.Id}");
+            _logger.LogInformation($"Call to {nameof(ProcessFile)} with Id: {blueprintFile.Id}");
 
             // Delay 100ms to avoid blocking at the method "ReadImage"
             await Task.Delay(100);
 
             try
             {
-                _logger.LogInformation($"Reading image {rsFile.FilePath} ...");
-                FileStream fileStream = _imageService.ReadImage(rsFile.FilePath);
+                _logger.LogInformation($"Reading image {blueprintFile.FilePath} ...");
+                FileStream fileStream = _imageService.ReadImage(blueprintFile.FilePath);
                 if (fileStream != null)
                 {
                     using (fileStream)
                     {
-                        string fileExtension = rsFile.Extension.Contains(".") ? rsFile.Extension.ToLower() : $".{rsFile.Extension.ToLower()}";
+                        string fileExtension = blueprintFile.Extension.Contains(".") ? blueprintFile.Extension.ToLower() : $".{blueprintFile.Extension.ToLower()}";
                         (int height, int width) dimentions = await _imageService.GetImageDimentions(fileStream, fileExtension, CancellationToken.None);
 
-                        _logger.LogInformation($"Saving dimentions info for ImgId: {rsFile.Id} - {rsFile.OriginalFileName} with width/height: {dimentions.width}/{dimentions.height} ...");
+                        _logger.LogInformation($"Saving dimentions info for ImgId: {blueprintFile.Id} - {blueprintFile.OriginalFileName} with width/height: {dimentions.width}/{dimentions.height} ...");
                         var connection = _sqlConnectionFactory.GetNewConnection();
-                        const string updateQuery = @"UPDATE [dbo].[BlueprintFiles] SET Width = @Width, Height=@Height WHERE Id = @Id";
-                        await connection.ExecuteAsync(updateQuery, new { Width = dimentions.width, Height = dimentions.height, rsFile.Id });
+                        const string updateQuery = @"UPDATE [dbo].[BlueprintFile] SET Width = @Width, Height=@Height WHERE Id = @Id";
+                        await connection.ExecuteAsync(updateQuery, new { Width = dimentions.width, Height = dimentions.height, blueprintFile.Id });
                         connection.Dispose();
-                        _logger.LogInformation($"Update successfully for ImgId: {rsFile.Id}.");
+                        _logger.LogInformation($"Update successfully for ImgId: {blueprintFile.Id}.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed {nameof(ProcessRsFile)} with ImgId: {rsFile.Id}");
+                _logger.LogError(ex, $"Failed {nameof(ProcessFile)} with ImgId: {blueprintFile.Id}");
             }
         }
     }

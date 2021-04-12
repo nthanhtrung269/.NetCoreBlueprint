@@ -32,9 +32,9 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
             _domainEventService = domainEventService;
         }
 
-        public virtual DbSet<BlueprintFile> RsFiles { get; set; }
-        public virtual DbSet<BlueprintSetting> RsSetting { get; set; }
-        public virtual DbSet<BlueprintTransactionLog> RsTransactionLog { get; set; }
+        public virtual DbSet<BlueprintFile> BlueprintFile { get; set; }
+        public virtual DbSet<BlueprintSetting> BlueprintSetting { get; set; }
+        public virtual DbSet<BlueprintTransactionLog> BlueprintTransactionLog { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -73,7 +73,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
         {
             modelBuilder.Entity<BlueprintFile>(entity =>
             {
-                entity.ToTable("BlueprintFiles");
+                entity.ToTable("BlueprintFile");
 
                 entity.Property(e => e.CloudUrl).HasMaxLength(500);
 

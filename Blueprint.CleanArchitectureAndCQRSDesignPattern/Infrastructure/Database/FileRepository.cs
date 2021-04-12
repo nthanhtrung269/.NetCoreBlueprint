@@ -14,9 +14,9 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
         {
         }
 
-        public async Task<bool> DeleteFiles(List<BlueprintFile> files)
+        public async Task<bool> DeleteFiles(List<BlueprintFile> blueprintFiles)
         {
-            _dbContext.RsFiles.RemoveRange(files);
+            _dbContext.BlueprintFile.RemoveRange(blueprintFiles);
             await _dbContext.SaveChangesAsync();
 
             return true;
@@ -29,7 +29,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
 
         public IEnumerable<BlueprintFile> GetFiles(long id, int? width, int? height)
         {
-            return _dbContext.RsFiles.Where(file => (file.Id == id)
+            return _dbContext.BlueprintFile.Where(file => (file.Id == id)
                 || ((width == null || file.Width == width.Value)
                     && (height == null || file.Height == height.Value)
                     && (file.OriginalId == id))).ToList();
@@ -37,7 +37,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
 
         public IEnumerable<BlueprintFile> GetFilesForBackgroudProcessing(List<string> supportFiles, List<string> supportedCategoryTypes, int numberItems)
         {
-            List<BlueprintFile> rsFiles = _dbContext.RsFiles
+            List<BlueprintFile> blueprintFiles = _dbContext.BlueprintFile
                 .Where(f => supportFiles.Contains(f.Extension)
                             && supportedCategoryTypes.Contains(f.FileType)
                             && f.OriginalId == null
@@ -45,9 +45,9 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
                 .OrderByDescending(f => f.Id)
                 .Take(numberItems).ToList();
 
-            if (rsFiles == null || !rsFiles.Any())
+            if (blueprintFiles == null || !blueprintFiles.Any())
             {
-                rsFiles = _dbContext.RsFiles
+                blueprintFiles = _dbContext.BlueprintFile
                 .Where(f => supportFiles.Contains(f.Extension)
                             && supportedCategoryTypes.Contains(f.FileType)
                             && f.OriginalId == null
@@ -58,25 +58,25 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
                 .Take(numberItems).ToList();
             }
 
-            foreach (var rsFile in rsFiles)
+            foreach (var blueprintFile in blueprintFiles)
             {
-                rsFile.BackgroudProcessingStatus = (int)BackgroudProcessingStatus.IsProcessing;
+                blueprintFile.BackgroudProcessingStatus = (int)BackgroudProcessingStatus.IsProcessing;
             }
 
-            _dbContext.UpdateRange(rsFiles);
+            _dbContext.UpdateRange(blueprintFiles);
             _dbContext.SaveChanges();
 
-            return rsFiles;
+            return blueprintFiles;
         }
 
-        public void UpdateRangeForBackgroudProcessing(List<BlueprintFile> rsFiles, int backgroudProcessingStatus)
+        public void UpdateRangeForBackgroudProcessing(List<BlueprintFile> blueprintFiles, int backgroudProcessingStatus)
         {
-            foreach (var rsFile in rsFiles)
+            foreach (var blueprintFile in blueprintFiles)
             {
-                rsFile.BackgroudProcessingStatus = backgroudProcessingStatus;
+                blueprintFile.BackgroudProcessingStatus = backgroudProcessingStatus;
             }
 
-            _dbContext.UpdateRange(rsFiles);
+            _dbContext.UpdateRange(blueprintFiles);
             _dbContext.SaveChanges();
         }
     }

@@ -26,14 +26,14 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Files.Dele
             Guard.AgainstNull(nameof(BlueprintFile), request);
             Guard.AgainstNullOrNotAny(nameof(BlueprintFile), request.Ids);
 
-            var rsFiles = await _fileRepository.FindByAsync(e => request.Ids.Contains(e.Id));
+            var blueprintFiles = await _fileRepository.FindByAsync(e => request.Ids.Contains(e.Id));
             var tasks = new List<Task>();
 
             // Deletes files in folder
-            tasks.Add(Task.Run(() => { rsFiles.ForEach(f => _fileSystemService.Delete(f.FilePath)); }));
+            tasks.Add(Task.Run(() => { blueprintFiles.ForEach(f => _fileSystemService.Delete(f.FilePath)); }));
 
             // Deletes data files in database
-            tasks.Add(_fileRepository.DeleteFiles(rsFiles));
+            tasks.Add(_fileRepository.DeleteFiles(blueprintFiles));
 
             Task task = Task.WhenAll(tasks);
             await task;

@@ -29,11 +29,11 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Files.Even
             var domainEvent = notification.DomainEvent;
             _logger.LogInformation("Handling Domain Event: {DomainEvent}", domainEvent.GetType().Name);
 
-            BlueprintFile rsFile = await _fileRepository.GetByIdAsync(domainEvent.Id);
+            BlueprintFile blueprintFile = await _fileRepository.GetByIdAsync(domainEvent.Id);
 
-            if (rsFile != null)
+            if (blueprintFile != null)
             {
-                await _preGeneratorService.PreGenerateResizedImages(rsFile);
+                await _preGeneratorService.PreGenerateResizedImages(blueprintFile);
             }
         }
     }

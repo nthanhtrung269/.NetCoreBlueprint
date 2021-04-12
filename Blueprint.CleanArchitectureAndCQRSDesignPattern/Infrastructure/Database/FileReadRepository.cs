@@ -18,7 +18,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
                                         CompanyId, FilePath, ThumbnailPath, Extension, FileType, 
                                         Source, CloudUrl, FileData, CreatedBy, CreatedDate, ModifiedBy, 
                                         ModifiedDate
-                               FROM BlueprintFiles
+                               FROM BlueprintFile
                                WHERE Id in @ids";
             return await QueryAsync<BaseFileDto>(sql, new { ids = ids.ToArray() });
         }
@@ -29,7 +29,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
                                         CompanyId, FilePath, ThumbnailPath, Extension, FileType, 
                                         Source, CloudUrl, FileData, CreatedBy, CreatedDate, ModifiedBy, 
                                         ModifiedDate
-                               FROM BlueprintFiles
+                               FROM BlueprintFile
                                WHERE Id = @Id";
             return await QuerySingleOrDefaultAsync<BaseFileDto>(sql, new { id });
         }
@@ -40,7 +40,7 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Infrastructure.Databas
                                         CompanyId, FilePath, ThumbnailPath, Extension, FileType, 
                                         Source, CloudUrl, FileData, CreatedBy, CreatedDate, ModifiedBy, 
                                         ModifiedDate
-                               FROM BlueprintFiles
+                               FROM BlueprintFile
                                WHERE Id = @Id OR
                                         (OriginalId = @Id
                                         AND (@Height IS NULL OR Height = @Height)

@@ -24,13 +24,13 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Files.Dele
         public async Task<Unit> Handle(DeleteFileCommand request, CancellationToken cancellationToken)
         {
             Guard.AgainstNull(nameof(DeleteFileCommand), request);
-            BlueprintFile rsFile = await _fileRepository.GetByIdAsync(request.FileId);
-            Guard.AgainstNull(nameof(rsFile), rsFile);
+            BlueprintFile blueprintFile = await _fileRepository.GetByIdAsync(request.FileId);
+            Guard.AgainstNull(nameof(blueprintFile), blueprintFile);
 
             // Deletes file from forder
-            _fileSystemService.Delete(rsFile.FilePath);
+            _fileSystemService.Delete(blueprintFile.FilePath);
 
-            await _fileRepository.DeleteAsync(rsFile);
+            await _fileRepository.DeleteAsync(blueprintFile);
             await _fileRepository.CommitAsync();
 
             return Unit.Value;

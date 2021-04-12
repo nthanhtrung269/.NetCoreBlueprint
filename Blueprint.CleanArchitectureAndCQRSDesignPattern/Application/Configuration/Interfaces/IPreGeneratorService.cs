@@ -7,6 +7,6 @@ namespace Blueprint.CleanArchitectureAndCQRSDesignPattern.Application.Configurat
     {
         Task Process();
 
-        Task PreGenerateResizedImages(BlueprintFile rsFile);
+        Task PreGenerateResizedImages(BlueprintFile blueprintFile);
     }
 }
