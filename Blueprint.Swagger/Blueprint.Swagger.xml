@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Blueprint.Swagger</name>
+    </assembly>
+    <members>
+        <member name="M:Blueprint.Swagger.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment)">
+            <summary>
+            The Startup constructor.
+            </summary>
+            <param name="configuration">The configuration.</param>
+            <param name="environment">The environment.</param>
+        </member>
+    </members>
+</doc>
