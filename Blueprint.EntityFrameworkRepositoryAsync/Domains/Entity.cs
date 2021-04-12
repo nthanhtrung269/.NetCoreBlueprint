@@ -1,0 +1,10 @@
+﻿namespace Blueprint.EntityFrameworkRepositoryAsync
+{
+    /// <summary>
+    /// Base class for entities.
+    /// </summary>
+    public abstract class Entity<TId>
+    {
+        public TId Id { get; set; }
+    }
+}
