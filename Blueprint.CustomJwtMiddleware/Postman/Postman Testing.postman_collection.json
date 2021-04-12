@@ -1,0 +1,65 @@
+{
+	"info": {
+		"_postman_id": "6f0e76a0-d11d-4143-9e83-aad1eefab2e6",
+		"name": "Postman Testing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "authenticate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"test\",\r\n    \"password\": \"test\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:44312/users/authenticate",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44312",
+					"path": [
+						"users",
+						"authenticate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getall",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJuYmYiOjE2MDQ0ODUxMDYsImV4cCI6MTYwNTA4OTkwNiwiaWF0IjoxNjA0NDg1MTA2fQ.zRGAACwTIobUpIi7sB5XOcBDBJFTut9xdZqt2ycarOg",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://localhost:44312/users/",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "44312",
+					"path": [
+						"users",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
