@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Blueprint.SwaggerMultipleVersions</name>
+    </assembly>
+    <members>
+        <member name="T:Blueprint.Swagger.Controllers.v2.WeatherForecastController">
+            <summary>
+            The WeatherForecastController v2.
+            </summary>
+        </member>
+        <member name="M:Blueprint.Swagger.Controllers.v2.WeatherForecastController.#ctor(Microsoft.Extensions.Logging.ILogger{Blueprint.Swagger.Controllers.v2.WeatherForecastController})">
+            <summary>
+            The WeatherForecastController v2.
+            </summary>
+            <param name="logger">The logger.</param>
+        </member>
+        <member name="M:Blueprint.Swagger.Controllers.v2.WeatherForecastController.Get">
+            <summary>
+            The get method.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Blueprint.Swagger.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment)">
+            <summary>
+            The Startup constructor.
+            </summary>
+            <param name="configuration">The configuration.</param>
+            <param name="environment">The environment.</param>
+        </member>
+    </members>
+</doc>
